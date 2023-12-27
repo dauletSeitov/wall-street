@@ -3,6 +3,7 @@ CREATE TABLE Users (
   created_at TIMESTAMP NOT NULL,
   updated_at TIMESTAMP,
 
+  last_bough_date DATE NOT NULL,
   user_name VARCHAR(255) NOT NULL,
   balance INTEGER NOT NULL
 );
@@ -33,8 +34,9 @@ CREATE TABLE Purchases (
   created_at TIMESTAMP NOT NULL,
   updated_at TIMESTAMP,
 
+  user_id INTEGER NOT NULL,
   rate_id INTEGER NOT NULL,
-  price INTEGER NOT NULL
+  amount INTEGER NOT NULL
 );
 
 CREATE TABLE Rates (
