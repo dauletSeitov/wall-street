@@ -7,8 +7,12 @@ import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.meta.api.objects.InputFile;
+import wolf.from.wall.street.image.ImageService;
+import wolf.from.wall.street.rates.Rate;
+import wolf.from.wall.street.rates.RateService;
 
 import java.io.File;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -18,6 +22,9 @@ public class SimpleMessageService {
     private Long chatId;
     @Value("${app.rate.image.path}")
     private String path;
+
+    private final RateService rateService;
+    private final ImageService imageService;
 
     @SneakyThrows
     public void sendRates() {
@@ -31,6 +38,14 @@ public class SimpleMessageService {
         bot.execute(sendPhoto);
     }
 
+    @SneakyThrows
+    public void sendRatesManually() {
+        if (!new File(path).exists()) {
+            List<Rate> rates = rateService.generateRates();
+            imageService.createNewRateImage(rates);
+        }
+        sendRates();
+    }
 
     @SneakyThrows
     public void sendStartMessage(Long chatId) {

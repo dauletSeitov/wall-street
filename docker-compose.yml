@@ -1,12 +1,31 @@
 version: '3'
 services:
   postgresql:
-    container_name: postgres_wall_street
-    image: postgres:latest
+    container_name: postgres_wall_street_container
+    image: postgres:15.5
     environment:
-      - POSTGRES_USER=wall_street
-      - POSTGRES_PASSWORD=wall_street
-      - POSTGRES_DB=wall_street
+      - POSTGRES_USER=tyu
+      - POSTGRES_PASSWORD=tyu
+      - POSTGRES_DB=tyu
       - POSTGRES_HOST_AUTH_METHOD=md5
     ports:
       - '5432:5432'
+    volumes:
+      - ./app_data_volume:/var/lib/postgresql/data
+    networks:
+      - my_network
+    restart: always
+
+  stock:
+    container_name: stock-container
+    build: .
+    image: street-image
+    networks:
+      - my_network
+    restart: always
+
+volumes:
+  app_data_volume:
+
+networks:
+  my_network:

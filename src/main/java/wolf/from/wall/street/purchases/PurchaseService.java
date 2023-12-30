@@ -3,6 +3,7 @@ package wolf.from.wall.street.purchases;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -48,6 +49,8 @@ public class PurchaseService {
     private final WealthService wealthService;
 
     private final InMemoryStorage inMemoryStorage;
+    @Value("${app.rate.image.path}")
+    private String path;
 
     public void handleBuy(Message message) {
         User user = userService.createIfAbsent(message.getFrom().getId(), message.getFrom().getUserName());
@@ -236,10 +239,7 @@ public class PurchaseService {
                 .chatId(callbackQuery.getMessage().getChatId())
                 .text(message)
                 .build();
-
-
         bot.execute(sendMessage);
-
     }
 
     @SneakyThrows
@@ -249,7 +249,7 @@ public class PurchaseService {
         sendPhoto.setChatId(chatId);
         sendPhoto.setParseMode("html");
         sendPhoto.setCaption(createMessage(messageData));
-        sendPhoto.setPhoto(new InputFile(new File("/home/phantom/Downloads/photo_5190797942829733495_y.jpg")));
+        sendPhoto.setPhoto(new InputFile(new File(path)));
 
         InlineKeyboardMarkup markupInline = new InlineKeyboardMarkup();
 
@@ -263,11 +263,11 @@ public class PurchaseService {
             line2.add(InlineKeyboardButton.builder().text("-10 " + resourcesDto.name()).callbackData("sell-10-" + resourcesDto.id()).build());
         }
 
-        markupInline.setKeyboard(List.of(line1, line2,
-                List.of(InlineKeyboardButton.builder().text("Confirm").callbackData("CONFIRM").build()),
-                List.of(InlineKeyboardButton.builder().text("Cancel").callbackData("CANCEL").build())));
+        markupInline.setKeyboard(List.of(line1, line2, List.of(
+                InlineKeyboardButton.builder().text("Cancel").callbackData("CANCEL").build(),
+                InlineKeyboardButton.builder().text("Confirm").callbackData("CONFIRM").build()
+        )));
         sendPhoto.setReplyMarkup(markupInline);
-
 
         Message execute = bot.execute(sendPhoto);
         return execute.getMessageId();

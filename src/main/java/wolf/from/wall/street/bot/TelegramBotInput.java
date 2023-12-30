@@ -47,10 +47,10 @@ public class TelegramBotInput extends TelegramLongPollingBot {
                 purchaseService.sendHistory(update.getMessage());
             } else if (text.equalsIgnoreCase("/account")) {
                 wealthService.sendWealth(update.getMessage());
-            } else if (text.equalsIgnoreCase("/buy") && update.getMessage().isGroupMessage()) {
+            } else if (text.equalsIgnoreCase("/buy") && (update.getMessage().getChat().isSuperGroupChat() || update.getMessage().getChat().isGroupChat())) {
                 purchaseService.handleBuy(update.getMessage());
             } else if (text.equalsIgnoreCase("/rate")) {
-                simpleMessageService.sendRates();
+                simpleMessageService.sendRatesManually();
             }
         } else if (update.hasCallbackQuery()) {
             purchaseService.handleCallBack(update.getCallbackQuery());
